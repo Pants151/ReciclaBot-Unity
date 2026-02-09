@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Sonidos y Música")]
     public AudioSource musicSource; // Altavoz para la música de fondo
-    public AudioSource sfxSource;   // NUEVO: Altavoz para los efectos (SFX)
+    public AudioSource sfxSource;   // Altavoz para los efectos (SFX)
     public AudioClip pointSound;
     public AudioClip bombSound;
 
@@ -30,9 +30,21 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // Control por teclado (PC)
         float moveX = Input.GetAxis("Horizontal");
-        transform.Translate(Vector2.right * moveX * speed * Time.deltaTime);
 
+        // --- Soporte para Pantalla Táctil (Android)
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            // Si tocamos la mitad izquierda de la pantalla, movemos a la izquierda (-1)
+            // Si tocamos la derecha, movemos a la derecha (1)
+            if (touch.position.x < Screen.width / 2) moveX = -1f;
+            else moveX = 1f;
+        }
+
+        // Aplicamos el movimiento y los límites
+        transform.Translate(Vector2.right * moveX * speed * Time.deltaTime);
         float clampedX = Mathf.Clamp(transform.position.x, -xLimit, xLimit);
         transform.position = new Vector3(clampedX, transform.position.y, transform.position.z);
     }
